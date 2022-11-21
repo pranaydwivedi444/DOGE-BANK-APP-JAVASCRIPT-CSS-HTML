@@ -57,6 +57,8 @@ const inputClosePin = document.querySelector(".form__input--pin");
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 
+const euroToUsd = 1.03;
+
 const currencies = new Map([
   ["USD", "United States dollar"],
   ["EUR", "Euro"],
@@ -66,3 +68,105 @@ const currencies = new Map([
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
+// Display movements function
+const displayMov = function (movements) {
+  containerMovements.innerHTML = " ";
+
+  movements.forEach((amount, i) => {
+    let type = amount > 0 ? "deposit" : "withdrawal";
+    let movHTML = `<div class="movements__row">
+  <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
+  <div class="movements__value">${amount}€</div>
+</div>`;
+    containerMovements.insertAdjacentHTML("afterbegin", movHTML);
+  });
+};
+displayMov(account1.movements);
+
+//EUROTOINR
+// const euroToInr = 0.012;
+// const movINR = movements.map((mov) => euroToInr * mov);
+// console.log(movINR);
+
+//Creating usernames
+// const user = "Pranay Kumar Dwivedi";
+const usernameGenerator = function (account) {
+  account.forEach((acc) => {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(" ")
+      .map((name) => name[0])
+      .join("");
+  });
+  //add Random digits and alphabet code
+  // let str = " ";
+  // username.forEach(function (name) {
+  //   // console.log(name.slice(0, 1));
+  //   str += name[0];
+  // });
+  //stringfromcharcode
+  // let rNum = Math.trunc(Math.random() * 100);
+  // let rAlpha = String.fromCharCode(Math.trunc(Math.random() * 25) + 65);
+  // username += rNum + rAlpha;
+  // return username;
+};
+
+//Calculating Balance function
+const calcDisplayBalance = function (movements) {
+  //creating array of net balance
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  // console.log(balance);
+  labelBalance.textContent = balance;
+};
+
+//calculating summary bank statment
+const calcDisplaySummary = function (movements) {
+  const incomes = movements
+    .filter((mov) => mov > 0)
+    .reduce((sum, mov) => sum + mov, 0);
+  labelSumIn.textContent = incomes;
+  const out = Math.abs(
+    movements.filter((mov) => mov < 0).reduce((sum, mov) => sum + mov, 0)
+  );
+  labelSumOut.textContent = out;
+  const interest = movements
+    .filter(function (mov) {
+      return mov > 0;
+    })
+    .map((deposits) => (deposits * 1.2) / 100)
+    .filter((mov) => mov >= 1)
+    .reduce((sum, interest) => sum + interest, 0);
+  labelSumInterest.textContent = interest;
+};
+calcDisplaySummary(account1.movements);
+calcDisplayBalance(account1.movements);
+usernameGenerator(accounts);
+// console.log(accounts);
+
+//Creating a array of withdraws and deposits
+const deposits = movements.filter((mov) => mov > 0);
+const withdrawls = movements.filter((mov) => mov < 0);
+// console.log(deposits, withdrawls);
+
+//Calcuating Total User deposits in USD using chaining methods
+const totalDesposistUSD = movements
+  .filter((mov) => mov > 0)
+  .map((mov) => mov * euroToUsd)
+  .reduce((bal, mov) => bal + mov);
+// console.log(totalDesposistUSD);
+
+//Declaring current account varaible outside
+let currentAccount;
+//USER LOGIN FUNCTION
+const userLogin = function (e) {
+  e.preventDefault();
+  currentAccount = accounts.find(
+    (acc) => acc?.username === inputLoginUsername.value
+  );
+  // console.log(currentAccount);
+  if (currentAccount.pin === Number(inputLoginPin?.value)) {
+    containerApp.style.opacity = 100;
+  }
+};
+
+btnLogin.addEventListener("click", userLogin);
