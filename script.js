@@ -1,3 +1,10 @@
+///ADDING MORE FEATURES with new branch
+//1) FOR WRONG PIN ACCOUNT LOCKS OUT
+//WRONG USERNAME UI
+//insuffiecient money
+//Indian names and login
+//deleting account popup
+//logout feauture
 const account1 = {
   owner: "Jonas Schmedtmann",
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
@@ -69,10 +76,12 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 // Display movements function
-const displayMov = function (movements) {
+const displayMov = function (movements, sort = false) {
   containerMovements.innerHTML = " ";
+  //New sorted array
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
 
-  movements.forEach((amount, i) => {
+  movs.forEach((amount, i) => {
     let type = amount > 0 ? "deposit" : "withdrawal";
     let movHTML = `<div class="movements__row">
   <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
@@ -81,7 +90,6 @@ const displayMov = function (movements) {
     containerMovements.insertAdjacentHTML("afterbegin", movHTML);
   });
 };
-displayMov(account1.movements);
 
 //EUROTOINR
 // const euroToInr = 0.012;
@@ -98,25 +106,26 @@ const usernameGenerator = function (account) {
       .map((name) => name[0])
       .join("");
   });
-  //add Random digits and alphabet code
-  // let str = " ";
-  // username.forEach(function (name) {
-  //   // console.log(name.slice(0, 1));
-  //   str += name[0];
-  // });
-  //stringfromcharcode
-  // let rNum = Math.trunc(Math.random() * 100);
-  // let rAlpha = String.fromCharCode(Math.trunc(Math.random() * 25) + 65);
-  // username += rNum + rAlpha;
-  // return username;
 };
+//add Random digits and alphabet code
+// let str = " ";
+// username.forEach(function (name) {
+//   // console.log(name.slice(0, 1));
+//   str += name[0];
+// });
+//stringfromcharcode
+// let rNum = Math.trunc(Math.random() * 100);
+// let rAlpha = String.fromCharCode(Math.trunc(Math.random() * 25) + 65);
+// username += rNum + rAlpha;
+// return username;
 
 //Calculating Balance function
-const calcDisplayBalance = function (movements) {
+const calcDisplayBalance = function (acc) {
   //creating array of net balance
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
   // console.log(balance);
-  labelBalance.textContent = balance;
+  labelBalance.textContent = acc.balance;
+  // return balance;
 };
 
 //calculating summary bank statment
@@ -138,14 +147,13 @@ const calcDisplaySummary = function (movements) {
     .reduce((sum, interest) => sum + interest, 0);
   labelSumInterest.textContent = interest;
 };
-calcDisplaySummary(account1.movements);
-calcDisplayBalance(account1.movements);
+
 usernameGenerator(accounts);
 // console.log(accounts);
 
 //Creating a array of withdraws and deposits
-const deposits = movements.filter((mov) => mov > 0);
-const withdrawls = movements.filter((mov) => mov < 0);
+// const deposits = movements.filter((mov) => mov > 0);
+// const withdrawls = movements.filter((mov) => mov < 0);
 // console.log(deposits, withdrawls);
 
 //Calcuating Total User deposits in USD using chaining methods
@@ -166,7 +174,94 @@ const userLogin = function (e) {
   // console.log(currentAccount);
   if (currentAccount.pin === Number(inputLoginPin?.value)) {
     containerApp.style.opacity = 100;
+    labelWelcome.textContent = `Welcome ${currentAccount.owner}`;
+    //clearing input fields
+    inputLoginUsername.value = inputLoginPin.value = "";
+    inputLoginPin.blur();
+    updateUI(currentAccount);
   }
 };
+//Updating UI function
+const updateUI = function (acc) {
+  calcDisplaySummary(acc.movements);
+  calcDisplayBalance(acc);
+  displayMov(acc.movements);
+};
 
+//LOGIN BUTTON
 btnLogin.addEventListener("click", userLogin);
+
+//Transfer function
+let recipentAccount;
+const userTransfer = function (e) {
+  e.preventDefault();
+  recipentAccount = accounts.find(
+    (acc) => acc.username === inputTransferTo.value
+  );
+  let amount = inputTransferAmount.value;
+  if (
+    recipentAccount &&
+    amount < currentAccount.balance &&
+    amount > 0 &&
+    recipentAccount !== currentAccount
+  ) {
+    //add negative movement to user
+    currentAccount.movements.push(-Number(inputTransferAmount.value));
+    //adding postive moment to recipent
+    recipentAccount.movements.push(Number(inputTransferAmount.value));
+    //updating UI
+    updateUI(currentAccount);
+    //clearing fields
+    inputTransferAmount.value = inputTransferTo.value = "";
+    inputTransferTo.blur();
+  }
+};
+//Implementing transfer
+btnTransfer.addEventListener("click", userTransfer);
+
+//Loan Function
+const loanRequest = function (e) {
+  e.preventDefault();
+  let loanAmount = Number(inputLoanAmount.value);
+  if (
+    loanAmount > 0 &&
+    currentAccount.movements.some((mov) => mov >= loanAmount * 0.1)
+  ) {
+    //loan granted
+    currentAccount.movements.push(loanAmount);
+    updateUI(currentAccount);
+    inputLoanAmount.value = "";
+  }
+};
+//Requesting loan feature
+btnLoan.addEventListener("click", loanRequest);
+
+//close account function
+const closeAccount = function (e) {
+  e.preventDefault();
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    //removing/deleting account
+    index = accounts.findIndex(
+      (acc) => acc.username === currentAccount.username
+    );
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+    //Login again UI
+    labelWelcome.textContent = "Login to get started";
+    inputCloseUsername.value = inputClosePin.value = "";
+  }
+};
+//closing the bank account
+btnClose.addEventListener("click", closeAccount);
+
+//flag/state
+let sorted = false;
+//sorting
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+  displayMov(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
