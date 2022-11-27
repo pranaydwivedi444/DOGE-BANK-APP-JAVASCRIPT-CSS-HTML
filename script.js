@@ -17,9 +17,9 @@ const account1 = {
     "2019-12-25T06:04:23.907Z",
     "2020-01-25T14:18:46.235Z",
     "2020-02-05T16:33:06.386Z",
-    "2020-04-10T14:43:26.374Z",
-    "2020-06-25T18:49:59.371Z",
-    "2020-07-26T12:01:20.894Z",
+    "2022-11-21T14:43:26.374Z",
+    "2022-11-25T18:49:59.371Z",
+    "2022-11-26T12:01:20.894Z",
   ],
   currency: "USD",
   locale: "en-US",
@@ -127,6 +127,15 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 //Movement date function
 const formatDate = function (date) {
+  const fDate = new Date(date);
+  const calcDayspassed = (day1, day2) =>
+    Math.round(Math.abs(day2 - day1) / (1000 * 60 * 60 * 24));
+  let daysPassed = calcDayspassed(new Date(), fDate);
+  console.log(daysPassed);
+  if (daysPassed == 0) return `Today`;
+  if (daysPassed == 0) return `Yesterday`;
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+
   const now = new Date(date);
   let day = `${now.getDate()}`.padStart(2, 0);
   let month = `${now.getMonth() + 1}`.padStart(2, 0);
@@ -144,7 +153,8 @@ const displayMov = function (acc, sort = false) {
 
   movs.forEach((amount, i) => {
     let type = amount > 0 ? "deposit" : "withdrawal";
-    date = formatDate(acc.movementsDates[i]);
+
+    let date = formatDate(acc.movementsDates[i]);
 
     let movHTML = `<div class="movements__row">
   <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
