@@ -125,15 +125,24 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 // Display movements function
-const displayMov = function (movements, sort = false) {
+const displayMov = function (acc, sort = false) {
   containerMovements.innerHTML = " ";
   //New sorted array
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = sort
+    ? acc.movements.slice().sort((a, b) => a - b)
+    : acc.movements;
 
   movs.forEach((amount, i) => {
     let type = amount > 0 ? "deposit" : "withdrawal";
+    const now = new Date(acc.movementsDates[i]);
+    let day = `${now.getDate()}`.padStart(2, 0);
+    let month = `${now.getMonth() + 1}`.padStart(2, 0);
+    let year = `${now.getFullYear()}`;
+
+    let date = `${day}/${month}/${year}`;
     let movHTML = `<div class="movements__row">
   <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
+  <div class="movements__date">${date}</div>
   <div class="movements__value">${amount.toFixed(2)}€</div>
 </div>`;
     containerMovements.insertAdjacentHTML("afterbegin", movHTML);
@@ -234,7 +243,17 @@ const userLogin = function (e) {
 const updateUI = function (acc) {
   calcDisplaySummary(acc.movements);
   calcDisplayBalance(acc);
-  displayMov(acc.movements);
+  displayMov(acc);
+  const now = new Date();
+  let day = `${now.getDate()}`.padStart(2, 0);
+  let month = `${now.getMonth() + 1}`.padStart(2, 0);
+  let year = `${now.getFullYear()}`;
+  let hour = `${now.getHours()}`.padStart(2, 0);
+  let min = `${now.getMinutes()}`.padStart(2, 0);
+  labelDate.textContent = `${day}/${month}/${`${now.getFullYear()}`.padStart(
+    2,
+    0
+  )}, ${hour}:${min}`;
 };
 
 //LOGIN BUTTON
@@ -258,6 +277,9 @@ const userTransfer = function (e) {
     currentAccount.movements.push(-Number(inputTransferAmount.value));
     //adding postive moment to recipent
     recipentAccount.movements.push(Number(inputTransferAmount.value));
+    //adding loan date
+    currentAccount.movementsDates.push(new Date().toISOString());
+    recipentAccount.movementsDates.push(new Date().toISOString());
     //updating UI
     updateUI(currentAccount);
     //clearing fields
@@ -278,6 +300,9 @@ const loanRequest = function (e) {
   ) {
     //loan granted
     currentAccount.movements.push(loanAmount);
+    //loan date update
+    currentAccount.movementsDates.push(new Date().toISOString());
+
     updateUI(currentAccount);
     inputLoanAmount.value = "";
   }
@@ -311,6 +336,12 @@ let sorted = false;
 //sorting
 btnSort.addEventListener("click", function (e) {
   e.preventDefault();
-  displayMov(currentAccount.movements, !sorted);
+  displayMov(currentAccount, !sorted);
   sorted = !sorted;
 });
+
+/////////////////
+////Fake login
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
