@@ -124,6 +124,16 @@ const currencies = new Map([
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
+
+//Movement date function
+const formatDate = function (date) {
+  const now = new Date(date);
+  let day = `${now.getDate()}`.padStart(2, 0);
+  let month = `${now.getMonth() + 1}`.padStart(2, 0);
+  let year = `${now.getFullYear()}`;
+
+  return `${day}/${month}/${year}`;
+};
 // Display movements function
 const displayMov = function (acc, sort = false) {
   containerMovements.innerHTML = " ";
@@ -134,12 +144,8 @@ const displayMov = function (acc, sort = false) {
 
   movs.forEach((amount, i) => {
     let type = amount > 0 ? "deposit" : "withdrawal";
-    const now = new Date(acc.movementsDates[i]);
-    let day = `${now.getDate()}`.padStart(2, 0);
-    let month = `${now.getMonth() + 1}`.padStart(2, 0);
-    let year = `${now.getFullYear()}`;
+    date = formatDate(acc.movementsDates[i]);
 
-    let date = `${day}/${month}/${year}`;
     let movHTML = `<div class="movements__row">
   <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
   <div class="movements__date">${date}</div>
