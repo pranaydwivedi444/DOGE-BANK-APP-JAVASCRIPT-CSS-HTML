@@ -2,12 +2,18 @@
 //1) FOR WRONG PIN ACCOUNT LOCKS OUT
 //WRONG USERNAME UI
 //insuffiecient money
-//Indian names and login
+//Indian names and login welcome in Hindi
 //deleting account popup
 //logout feauture
+//button to translate date
 //add background color feautre
+//switch languages , translate page
+//hi-IN sa-IN
+//te-IN
+//convert currencies to different format using current
+//navigator.laungagge
 const account1 = {
-  owner: "Jonas Schmedtmann",
+  owner: "Pranay Dwivedi",
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
@@ -21,12 +27,12 @@ const account1 = {
     "2022-11-25T18:49:59.371Z",
     "2022-11-26T12:01:20.894Z",
   ],
-  currency: "USD",
+  currency: "INR",
   locale: "en-US",
 };
 
 const account2 = {
-  owner: "Jessica Davis",
+  owner: "Vaibhav Mishra",
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
@@ -40,12 +46,12 @@ const account2 = {
     "2020-06-25T18:49:59.371Z",
     "2020-07-26T12:01:20.894Z",
   ],
-  currency: "USD",
-  locale: "en-US",
+  currency: "INR",
+  locale: "hi-IN",
 };
 
 const account3 = {
-  owner: "Steven Thomas Williams",
+  owner: "Sharukh Khan",
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
@@ -60,11 +66,11 @@ const account3 = {
     "2020-07-12T10:51:36.790Z",
   ],
   currency: "EUR",
-  locale: "pt-PT", // de-DE
+  locale: "sa-IN", // de-DE
 };
 
 const account4 = {
-  owner: "Sarah Smith",
+  owner: "Sai Deepak",
   movements: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
@@ -79,7 +85,7 @@ const account4 = {
     "2020-07-26T12:01:20.894Z",
   ],
   currency: "USD",
-  locale: "en-US",
+  locale: "te-IN",
 };
 
 const accounts = [account1, account2, account3, account4];
@@ -125,13 +131,22 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 
+//NUMBERS INTERNATIONAlIZATOn
+const formatNumber = function (num) {
+  let options = {
+    style: "currency",
+    currency: "INR",
+    // numberingSystem: "deva",
+  };
+  return new Intl.NumberFormat("hi-IN", options).format(num);
+};
 //Movement date function
 const formatDate = function (date) {
   const fDate = new Date(date);
   const calcDayspassed = (day1, day2) =>
     Math.round(Math.abs(day2 - day1) / (1000 * 60 * 60 * 24));
   let daysPassed = calcDayspassed(new Date(), fDate);
-  console.log(daysPassed);
+
   if (daysPassed == 0) return `Today`;
   if (daysPassed == 0) return `Yesterday`;
   if (daysPassed <= 7) return `${daysPassed} days ago`;
@@ -159,7 +174,7 @@ const displayMov = function (acc, sort = false) {
     let movHTML = `<div class="movements__row">
   <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
   <div class="movements__date">${date}</div>
-  <div class="movements__value">${amount.toFixed(2)}€</div>
+  <div class="movements__value">${formatNumber(amount.toFixed(2))}</div>
 </div>`;
     containerMovements.insertAdjacentHTML("afterbegin", movHTML);
   });
@@ -198,7 +213,7 @@ const calcDisplayBalance = function (acc) {
   //creating array of net balance
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0).toFixed(2);
   // console.log(balance);
-  labelBalance.textContent = acc.balance;
+  labelBalance.textContent = formatNumber(acc.balance);
   // return balance;
 };
 
@@ -207,11 +222,11 @@ const calcDisplaySummary = function (movements) {
   const incomes = movements
     .filter((mov) => mov > 0)
     .reduce((sum, mov) => sum + mov, 0);
-  labelSumIn.textContent = incomes.toFixed(2);
+  labelSumIn.textContent = formatNumber(incomes.toFixed(2));
   const out = Math.abs(
     movements.filter((mov) => mov < 0).reduce((sum, mov) => sum + mov, 0)
   );
-  labelSumOut.textContent = out.toFixed(2);
+  labelSumOut.textContent = formatNumber(out.toFixed(2));
   const interest = movements
     .filter(function (mov) {
       return mov > 0;
@@ -219,7 +234,7 @@ const calcDisplaySummary = function (movements) {
     .map((deposits) => (deposits * 1.2) / 100)
     .filter((mov) => mov >= 1)
     .reduce((sum, interest) => sum + interest, 0);
-  labelSumInterest.textContent = interest.toFixed(2);
+  labelSumInterest.textContent = formatNumber(interest.toFixed(2));
 };
 
 usernameGenerator(accounts);
@@ -248,7 +263,7 @@ const userLogin = function (e) {
   // console.log(currentAccount);
   if (currentAccount.pin === Number(inputLoginPin?.value)) {
     containerApp.style.opacity = 100;
-    labelWelcome.textContent = `Welcome ${currentAccount.owner}`;
+    labelWelcome.textContent = `नमस्ते ${currentAccount.owner}`;
     //clearing input fields
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
@@ -260,16 +275,29 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc.movements);
   calcDisplayBalance(acc);
   displayMov(acc);
-  const now = new Date();
-  let day = `${now.getDate()}`.padStart(2, 0);
-  let month = `${now.getMonth() + 1}`.padStart(2, 0);
-  let year = `${now.getFullYear()}`;
-  let hour = `${now.getHours()}`.padStart(2, 0);
-  let min = `${now.getMinutes()}`.padStart(2, 0);
-  labelDate.textContent = `${day}/${month}/${`${now.getFullYear()}`.padStart(
-    2,
-    0
-  )}, ${hour}:${min}`;
+  //Date internationalization
+  let now = new Date();
+  const options = {
+    hour: "numeric",
+    minute: "numeric",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    weekday: "long",
+  };
+  labelDate.textContent = new Intl.DateTimeFormat(acc.locale, options).format(
+    now
+  );
+  // const now = new Date();
+  // let day = `${now.getDate()}`.padStart(2, 0);
+  // let month = `${now.getMonth() + 1}`.padStart(2, 0);
+  // let year = `${now.getFullYear()}`;
+  // let hour = `${now.getHours()}`.padStart(2, 0);
+  // let min = `${now.getMinutes()}`.padStart(2, 0);
+  // labelDate.textContent = `${day}/${month}/${`${now.getFullYear()}`.padStart(
+  //   2,
+  //   0
+  // )}, ${hour}:${min}`;
 };
 
 //LOGIN BUTTON
