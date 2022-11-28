@@ -130,7 +130,27 @@ const currencies = new Map([
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
+let timer;
+//Logout Timer function
+const startLogoutTimer = function () {
+  let time = 300;
+  const tick = () => {
+    let minute = `${Math.trunc(time / 60)}`.padStart(2, 0);
+    let seconds = `${Math.trunc(time % 60)}`.padStart(2, 0);
+    time--;
+    labelTimer.textContent = `${minute}:${seconds}`;
+    //zero second logout
+    if (time == 0) {
+      containerApp.style.opacity = 0;
 
+      labelWelcome.textContent = "Login to get started";
+      clearInterval(timer);
+    }
+  };
+  // let time = 10;
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
 //NUMBERS INTERNATIONAlIZATOn
 const formatNumber = function (num) {
   let options = {
@@ -268,6 +288,8 @@ const userLogin = function (e) {
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
     updateUI(currentAccount);
+    timer && clearInterval(timer);
+    timer = startLogoutTimer();
   }
 };
 //Updating UI function
@@ -316,20 +338,24 @@ const userTransfer = function (e) {
     amount < currentAccount.balance &&
     amount > 0 &&
     recipentAccount !== currentAccount
-  ) {
-    //add negative movement to user
-    currentAccount.movements.push(-Number(inputTransferAmount.value));
-    //adding postive moment to recipent
-    recipentAccount.movements.push(Number(inputTransferAmount.value));
-    //adding loan date
-    currentAccount.movementsDates.push(new Date().toISOString());
-    recipentAccount.movementsDates.push(new Date().toISOString());
-    //updating UI
-    updateUI(currentAccount);
-    //clearing fields
-    inputTransferAmount.value = inputTransferTo.value = "";
-    inputTransferTo.blur();
-  }
+  )
+    setTimeout(() => {
+      //add negative movement to user
+      currentAccount.movements.push(-Number(inputTransferAmount.value));
+      //adding postive moment to recipent
+      recipentAccount.movements.push(Number(inputTransferAmount.value));
+      //adding loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
+      recipentAccount.movementsDates.push(new Date().toISOString());
+      //updating UI
+      updateUI(currentAccount);
+      //clearing fields
+      inputTransferAmount.value = inputTransferTo.value = "";
+      inputTransferTo.blur();
+      //reseting timer
+      clearInterval(timer);
+      timer = startLogoutTimer();
+    }, 2000);
 };
 //Implementing transfer
 btnTransfer.addEventListener("click", userTransfer);
@@ -341,15 +367,19 @@ const loanRequest = function (e) {
   if (
     loanAmount > 0 &&
     currentAccount.movements.some((mov) => mov >= loanAmount * 0.1)
-  ) {
-    //loan granted
-    currentAccount.movements.push(loanAmount);
-    //loan date update
-    currentAccount.movementsDates.push(new Date().toISOString());
+  )
+    setTimeout(() => {
+      //loan granted
+      currentAccount.movements.push(loanAmount);
+      //loan date update
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    updateUI(currentAccount);
-    inputLoanAmount.value = "";
-  }
+      updateUI(currentAccount);
+      inputLoanAmount.value = "";
+      //reseting timer
+      clearInterval(timer);
+      timer = startLogoutTimer();
+    }, 2000);
 };
 //Requesting loan feature
 btnLoan.addEventListener("click", loanRequest);
@@ -389,3 +419,4 @@ btnSort.addEventListener("click", function (e) {
 currentAccount = account1;
 updateUI(currentAccount);
 containerApp.style.opacity = 100;
+startLogoutTimer();
