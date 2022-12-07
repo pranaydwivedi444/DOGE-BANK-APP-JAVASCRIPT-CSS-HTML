@@ -55,7 +55,7 @@ cookieMsg.style.height =
 //old school way of doing smooth scrolling
 
 btnScrollTo.addEventListener("click", function (e) {
-  const scrollCordinate = scrollSection.getBoundingClientRect();
+  //   const scrollCordinate = scrollSection.getBoundingClientRect();
 
   //   window.scrollTo({
   //     left: scrollCordinate.x + window.scrollX,
@@ -97,3 +97,49 @@ tabContainer.addEventListener("click", function (e) {
     .querySelector(`.operations__content--${clicked.dataset.tab}`)
     .classList.add("operations__content--active");
 });
+
+//implementing fade anitmaiton
+const nav_bar = document.querySelector(".nav");
+
+const hoverFade = function (e) {
+  if (e.target.classList.contains("nav__link")) {
+    const link = e.target;
+    const siblings = link.closest(".nav").querySelectorAll(".nav__link");
+    const logo = link.closest(".nav").querySelector("img");
+    //implementing feature
+    siblings.forEach((el) => {
+      if (el != link) {
+        el.style.opacity = this;
+      }
+    });
+    logo.style.opacity = this;
+  }
+};
+nav_bar.addEventListener("mouseover", hoverFade.bind(0.5));
+
+nav_bar.addEventListener("mouseout", hoverFade.bind(1));
+
+//implementing sticky navitgation
+// window.addEventListener("scroll", function () {
+//   const cordinates = scrollSection.getBoundingClientRect();
+//   if (cordinates.top < window.scrollY) {
+//     nav_bar.classList.add("sticky");
+//   } else nav_bar.classList.remove("sticky");
+// });
+
+//implementing Sticky Navigation in a better way through Intersection API
+const obsCallback = function (entries) {
+  //   entries.forEach((entry)  => console.log(entry));
+  const [entry] = entries;
+  entry.isIntersecting
+    ? nav_bar.classList.remove("sticky")
+    : nav_bar.classList.add("sticky");
+};
+const nav_bar_height = nav_bar.getBoundingClientRect().height;
+const obsoptions = {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${nav_bar_height}px`,
+};
+const headObserver = new IntersectionObserver(obsCallback, obsoptions);
+headObserver.observe(document.querySelector(".header"));
