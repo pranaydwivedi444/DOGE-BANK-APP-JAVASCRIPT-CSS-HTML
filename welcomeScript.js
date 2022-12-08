@@ -173,7 +173,7 @@ const revImage = function (entries, observations) {
   entry.target.addEventListener("load", function () {
     entry.target.classList.remove("lazy-img");
   });
-  observe.unobserve(entry.target);
+  observations.unobserve(entry.target);
 };
 const revealImages = new IntersectionObserver(revImage, {
   root: null,
@@ -185,3 +185,39 @@ allImages.forEach((element) => {
 });
 
 //slider buttons
+let currSlide = 0;
+const slides = document.querySelectorAll(".slide");
+
+slides.forEach((el, i) => {
+  el.style.transform = `translateX(${i * 100}%)`;
+});
+
+const btn_left = document.querySelector(".slider__btn--left");
+const btn_right = document.querySelector(".slider__btn--right");
+// console.log(slides.length - 1);
+const slide_right = function () {
+  if (currSlide == slides.length - 1) {
+    currSlide = 0;
+  } else currSlide++;
+
+  goToSlidemover();
+};
+btn_right.addEventListener("click", slide_right);
+const slide_left = function () {
+  if (currSlide == 0) {
+    currSlide = slides.length - 1;
+  } else currSlide--;
+  goToSlidemover();
+};
+btn_left.addEventListener("click", slide_left);
+
+const goToSlidemover = function () {
+  slides.forEach((el, i) => {
+    el.style.transform = `translateX(${(i - currSlide) * 100}%)`;
+  });
+};
+
+document.addEventListener("keydown", function (e) {
+  if (e.key == "ArrowLeft") slide_left();
+  if (e.key == "ArrowRight") slide_right();
+});
