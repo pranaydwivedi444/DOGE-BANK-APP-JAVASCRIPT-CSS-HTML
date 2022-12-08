@@ -143,3 +143,45 @@ const obsoptions = {
 };
 const headObserver = new IntersectionObserver(obsCallback, obsoptions);
 headObserver.observe(document.querySelector(".header"));
+
+//Implementing  revealing scrolling sections using Intersection API
+const _Allsections = document.querySelectorAll(".section");
+const revealSec = function (entries, observe) {
+  const [entry] = entries;
+  //   console.log(`${entry.target.id}`);
+
+  if (!entry.isIntersecting) return;
+  entry.target.classList.remove("section--hidden");
+  observe.unobserve(entry.target);
+};
+const secObs = {
+  root: null,
+  threshold: 0.15,
+};
+const revealSection = new IntersectionObserver(revealSec, secObs);
+
+_Allsections.forEach((section) => {
+  //   console.log(section);
+  section.classList.add("section--hidden");
+  revealSection.observe(section);
+});
+//lazy loading images
+const revImage = function (entries, observations) {
+  const [entry] = entries;
+  if (!entry.isIntersecting) return;
+  entry.target.src = entry.target.dataset.src;
+  entry.target.addEventListener("load", function () {
+    entry.target.classList.remove("lazy-img");
+  });
+  observe.unobserve(entry.target);
+};
+const revealImages = new IntersectionObserver(revImage, {
+  root: null,
+  threshold: 0.28,
+});
+const allImages = document.querySelectorAll(".features__img");
+allImages.forEach((element) => {
+  revealImages.observe(element);
+});
+
+//slider buttons
