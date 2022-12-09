@@ -200,18 +200,18 @@ const slide_right = function () {
     currSlide = 0;
   } else currSlide++;
 
-  goToSlidemover();
+  goToSlidemover(currSlide);
 };
 btn_right.addEventListener("click", slide_right);
 const slide_left = function () {
   if (currSlide == 0) {
     currSlide = slides.length - 1;
   } else currSlide--;
-  goToSlidemover();
+  goToSlidemover(currSlide);
 };
 btn_left.addEventListener("click", slide_left);
 
-const goToSlidemover = function () {
+const goToSlidemover = function (currSlide) {
   slides.forEach((el, i) => {
     el.style.transform = `translateX(${(i - currSlide) * 100}%)`;
   });
@@ -221,3 +221,37 @@ document.addEventListener("keydown", function (e) {
   if (e.key == "ArrowLeft") slide_left();
   if (e.key == "ArrowRight") slide_right();
 });
+
+const dots = document.querySelector(".dots");
+
+slides.forEach((_, i) => {
+  dots.insertAdjacentHTML(
+    "beforeend",
+    `<button class="dots__dot" data-slide="${i}"></button>`
+  );
+});
+
+dots.addEventListener("click", function (e) {
+  if (e.target.classList.contains("dots__dot")) {
+    const tnum = e.target.dataset.slide;
+    goToSlidemover(tnum);
+    // console.log(tnum);
+    activateDot(e);
+    // e.target.classList.add("dots__dot--active");
+  }
+});
+
+const activateDot = function (e) {
+  document
+    .querySelectorAll(".dots__dot")
+    .forEach((el) => el.classList.remove("dots__dot--active"));
+  // document
+  //   .querySelector(`.dots_dot[data-slide="${tnum}"]`)
+  //   .classList.add("dots__dot--active");
+  e.target.classList.add("dots__dot--active");
+};
+
+// window.addEventListener("beforeunload", function (e) {
+//   e.preventDefault();
+//   e.returnValue = " ";
+// });
