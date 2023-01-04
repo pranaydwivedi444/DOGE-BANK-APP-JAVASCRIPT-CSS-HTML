@@ -16,3 +16,6 @@ Bankist Website Project
 Creating an informative and user friendly website. Using DOM manipulation and events to make the website
 interactive and convenient for the user. This website contains a slide bar, a sticky navigation and smooth scrolling to
 make for an enjoyable web view of the user.
+Bankist App Project
+This is a banking application where the User can login to their account by entering a username and password. Once
+access has been granted the user has the option to view his balance sheet as well as make a 
