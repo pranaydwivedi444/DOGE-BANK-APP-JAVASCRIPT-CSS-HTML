@@ -12,3 +12,7 @@ Technology used
 HTML
 CSS
 Vanilla JavaScript
+Bankist Website Project
+Creating an informative and user friendly website. Using DOM manipulation and events to make the website
+interactive and convenient for the user. This website contains a slide bar, a sticky navigation and smooth scrolling to
+make for an enjoyable web view of the user.
