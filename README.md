@@ -48,6 +48,15 @@ git clone https://github.com/[USERNAME]/bankist-app.git
 
 3. Use the application by creating an account, logging in, and accessing the various features.
 
+## Test Username and PIN
+Username: js
+PIN: 1111
+
+username: am
+PIN: 2222
+
+username: jd
+PIN: 3333
 ## Credits
 
 - [Jonas Schmedtmann](https://codingheroes.io/) for creating the "JavaScript Complete Course 2021: From Zero to Expert!" on Udemy.
