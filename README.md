@@ -1,5 +1,5 @@
 # Bankist App / DOGE BANK
-
+Live link - https://pranaydwivedi444.github.io/DOGE-BANK-APP-JAVASCRIPT-CSS-HTML
 The Bankist App is a fictional banking application that allows users to view their account balance, transfer money between accounts, request loans, and close accounts. This project was created as part of the "JavaScript Complete Course 2021: From Zero to Expert!" by Jonas Schmedtmann on Udemy.
 
 ![image](https://user-images.githubusercontent.com/48515987/221422028-454e8448-d5f6-428b-82f0-ef5872f22ac8.png)
@@ -41,7 +41,7 @@ The Bankist App is a fictional banking application that allows users to view the
 
 1. Clone the repository:
 
-git clone https://github.com/[USERNAME]/bankist-app.git
+git clone https://github.com/pranaydwivedi444/bankist-app.git
 
 
 2. Open the index.html file in your web browser.
